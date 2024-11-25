@@ -1,0 +1,125 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+    features.operators.openshift.io/disconnected: "true"
+    features.operators.openshift.io/fips-compliant: "true"
+    features.operators.openshift.io/proxy-aware: "false"
+    features.operators.openshift.io/tls-profiles: "false"
+    features.operators.openshift.io/token-auth-aws: "false"
+    features.operators.openshift.io/token-auth-azure: "false"
+    features.operators.openshift.io/token-auth-gcp: "false"
+    operatorframework.io/suggested-namespace: openstack
+    operators.openshift.io/infrastructure-features: '["disconnected"]'
+    operators.operatorframework.io/operator-type: non-standalone
+  name: telemetry-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Autoscaling is the Schema for the autoscalings API
+      displayName: Autoscaling
+      kind: Autoscaling
+      name: autoscalings.telemetry.openstack.org
+      specDescriptors:
+      - description: TLS - Parameters related to the TLS
+        displayName: TLS
+        path: aodh.tls
+      version: v1beta1
+    - description: Ceilometer is the Schema for the ceilometers API
+      displayName: Ceilometer
+      kind: Ceilometer
+      name: ceilometers.telemetry.openstack.org
+      specDescriptors:
+      - description: KSMTLS - Parameters related to the TLS for kube-state-metrics
+        displayName: KSMTLS
+        path: ksmTls
+      - description: TLS - Parameters related to the TLS
+        displayName: TLS
+        path: tls
+      version: v1beta1
+    - description: Logging is the Schema for the loggings API
+      displayName: Logging
+      kind: Logging
+      name: loggings.telemetry.openstack.org
+      version: v1beta1
+    - description: MetricStorage is the Schema for the metricstorages API
+      displayName: Metric Storage
+      kind: MetricStorage
+      name: metricstorages.telemetry.openstack.org
+      specDescriptors:
+      - description: TLS - Parameters related to the TLS
+        displayName: Prometheus TLS
+        path: prometheusTls
+      version: v1beta1
+    - description: Telemetry is the Schema for the telemetry API
+      displayName: Telemetry
+      kind: Telemetry
+      name: telemetries.telemetry.openstack.org
+      specDescriptors:
+      - description: TLS - Parameters related to the TLS
+        displayName: TLS
+        path: autoscaling.aodh.tls
+      - description: Enabled - Whether OpenStack autoscaling service should be deployed
+          and managed
+        displayName: Enabled
+        path: autoscaling.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enabled - Whether OpenStack Ceilometer service should be deployed
+          and managed
+        displayName: Enabled
+        path: ceilometer.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: KSMTLS - Parameters related to the TLS for kube-state-metrics
+        displayName: KSMTLS
+        path: ceilometer.ksmTls
+      - description: TLS - Parameters related to the TLS
+        displayName: TLS
+        path: ceilometer.tls
+      - description: Enabled - Whether OpenStack logging service should be deployed
+          and managed
+        displayName: Enabled
+        path: logging.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enabled - Whether a MetricStorage should be deployed and managed
+        displayName: Enabled
+        path: metricStorage.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: TLS - Parameters related to the TLS
+        displayName: Prometheus TLS
+        path: metricStorage.prometheusTls
+      version: v1beta1
+  description: Telemetry Operator
+  displayName: Telemetry Operator
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - OpenStack
+  - Telemetry
+  - Ceilometer
+  links:
+  - name: Telemetry Operator
+    url: https://github.com/openstack-k8s-operators/telemetry-operator
+  maturity: beta
+  provider:
+    name: Red Hat Inc.
+    url: https://redhat.com/
+  version: 0.0.0

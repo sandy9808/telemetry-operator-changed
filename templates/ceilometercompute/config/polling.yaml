@@ -1,0 +1,9 @@
+---
+sources:
+    - name: pollsters
+      interval: 120
+      meters:
+        - cpu
+        - memory.usage
+        - disk.*
+        - network.*

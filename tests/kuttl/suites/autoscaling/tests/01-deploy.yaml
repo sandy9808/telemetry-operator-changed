@@ -1,0 +1,12 @@
+apiVersion: telemetry.openstack.org/v1beta1
+kind: Autoscaling
+metadata:
+  name: telemetry-kuttl
+spec:
+  aodh:
+    secret: osp-secret
+    passwordSelectors:
+    databaseAccount: aodh
+    databaseInstance: openstack
+    memcachedInstance: memcached
+  heatInstance: heat

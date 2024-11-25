@@ -1,0 +1,33 @@
+# This patch inject custom ENV settings to the manager container
+# Used to set our default image locations
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller-manager
+  namespace: system
+spec:
+  template:
+    spec:
+      containers:
+      - name: manager
+        env:
+        - name: RELATED_IMAGE_CEILOMETER_CENTRAL_IMAGE_URL_DEFAULT
+          value: devopsartifact.jio.com/docker-virtual-all/podified-antelope-centos9/openstack-ceilometer-central:current-podified
+        - name: RELATED_IMAGE_CEILOMETER_COMPUTE_IMAGE_URL_DEFAULT
+          value: devopsartifact.jio.com/docker-virtual-all/podified-antelope-centos9/openstack-ceilometer-compute:current-podified
+        - name: RELATED_IMAGE_CEILOMETER_NOTIFICATION_IMAGE_URL_DEFAULT
+          value: devopsartifact.jio.com/docker-virtual-all/podified-antelope-centos9/openstack-ceilometer-notification:current-podified
+        - name: RELATED_IMAGE_CEILOMETER_IPMI_IMAGE_URL_DEFAULT
+          value: devopsartifact.jio.com/docker-virtual-all/podified-antelope-centos9/openstack-ceilometer-ipmi:current-podified
+        - name: RELATED_IMAGE_CEILOMETER_SGCORE_IMAGE_URL_DEFAULT
+          value: devopsartifact.jio.com/docker-virtual-all/openstack-k8s-operators/sg-core:v6.0.0
+        - name: RELATED_IMAGE_APACHE_IMAGE_URL_DEFAULT
+          value: devopsartifact.jio.com/docker-virtual-all/ubi9/httpd-24:latest
+        - name: RELATED_IMAGE_AODH_API_IMAGE_URL_DEFAULT
+          value: devopsartifact.jio.com/docker-virtual-all/podified-antelope-centos9/openstack-aodh-api:current-podified
+        - name: RELATED_IMAGE_AODH_EVALUATOR_IMAGE_URL_DEFAULT
+          value: devopsartifact.jio.com/docker-virtual-all/podified-antelope-centos9/openstack-aodh-evaluator:current-podified
+        - name: RELATED_IMAGE_AODH_NOTIFIER_IMAGE_URL_DEFAULT
+          value: devopsartifact.jio.com/docker-virtual-all/podified-antelope-centos9/openstack-aodh-notifier:current-podified
+        - name: RELATED_IMAGE_AODH_LISTENER_IMAGE_URL_DEFAULT
+          value: devopsartifact.jio.com/docker-virtual-all/podified-antelope-centos9/openstack-aodh-listener:current-podified

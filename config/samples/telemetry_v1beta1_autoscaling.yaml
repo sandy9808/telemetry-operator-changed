@@ -1,0 +1,17 @@
+apiVersion: telemetry.openstack.org/v1beta1
+kind: Autoscaling
+metadata:
+  labels:
+    app.kubernetes.io/name: autoscaling
+    app.kubernetes.io/instance: autoscaling-sample
+    app.kubernetes.io/part-of: telemetry-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: telemetry-operator
+  name: autoscaling
+spec:
+  aodh:
+    secret: osp-secret
+    passwordSelectors:
+    databaseAccount: aodh
+    databaseInstance: openstack
+    memcachedInstance: memcached

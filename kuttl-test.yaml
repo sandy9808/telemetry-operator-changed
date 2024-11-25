@@ -1,0 +1,44 @@
+#
+# EXECUTION (from install_yamls repo root):
+#
+#   make telemetry_kuttl
+#
+# ASSUMPTIONS:
+#
+# 1. Latest version of kuttl is installed at /usr/local/bin/kubectl-kuttl
+#    - wget https://github.com/kudobuilder/kuttl/releases/download/v0.11.1/kubectl-kuttl_0.11.1_linux_x86_64
+#    - mv kubectl-kuttl_0.11.1_linux_x86_64 /usr/local/bin/kubectl-kuttl
+#    - chmod 755 /usr/local/bin/kubectl-kuttl
+# 2. An OCP 4.10+ CRC cluster with Podified Operators has been deployed
+# 3. CLI user has access to $KUBECONFIG
+
+apiVersion: kuttl.dev/v1alpha1
+kind: TestSuite
+reportFormat: JSON
+reportName: kuttl-test-telemetry
+namespace: telemetry-kuttl-tests
+timeout: 300
+parallel: 1
+testDirs:
+  - tests/kuttl/suites/autoscaling/
+  - tests/kuttl/suites/ceilometer/
+  - tests/kuttl/suites/logging/
+  - tests/kuttl/suites/default/
+  - tests/kuttl/suites/metricstorage/
+  - tests/kuttl/suites/tls/
+suppress:
+  - events                     # Remove spammy event logs
+commands:
+  - script: |
+      if [ ! -f ansibleee-ssh-key-id_rsa ]; then
+          ssh-keygen -f ansibleee-ssh-key-id_rsa -N "" -t rsa -b 4096
+      fi
+      oc create secret generic dataplane-ansible-ssh-private-key-secret \
+      --save-config \
+      --dry-run=client \
+      --from-file=authorized_keys=ansibleee-ssh-key-id_rsa.pub \
+      --from-file=ssh-privatekey=ansibleee-ssh-key-id_rsa \
+      --from-file=ssh-publickey=ansibleee-ssh-key-id_rsa.pub \
+      -n telemetry-kuttl-tests \
+      -o yaml | \
+      oc apply -f -

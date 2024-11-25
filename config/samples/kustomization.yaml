@@ -1,0 +1,8 @@
+## Append samples you want in your CSV to this file as resources ##
+resources:
+- telemetry_v1beta1_telemetry.yaml
+- telemetry_v1beta1_ceilometer.yaml
+- telemetry_v1beta1_autoscaling.yaml
+- telemetry_v1beta1_logging.yaml
+- telemetry_v1beta1_metricstorage.yaml
+#+kubebuilder:scaffold:manifestskustomizesamples

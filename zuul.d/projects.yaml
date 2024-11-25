@@ -1,0 +1,85 @@
+- job:
+    name: telemetry-operator-multinode-autoscaling
+    parent: podified-multinode-edpm-deployment-crc
+    dependencies: ["openstack-k8s-operators-content-provider"]
+    description: |
+      Deploy OpenStack with Autoscaling features enabled
+    vars:
+      cifmw_extras:
+        - "@{{ ansible_user_dir }}/{{ zuul.projects['github.com/openstack-k8s-operators/ci-framework'].src_dir  }}/scenarios/centos-9/multinode-ci.yml"
+        - "@{{ ansible_user_dir }}/{{ zuul.projects['github.com/openstack-k8s-operators/telemetry-operator'].src_dir }}/ci/vars-autoscaling.yml"
+
+- job:
+    name: telemetry-operator-multinode-autoscaling-tempest
+    parent: telemetry-operator-multinode-autoscaling
+    vars:
+      cifmw_extras:
+        - "@{{ ansible_user_dir }}/{{ zuul.projects['github.com/openstack-k8s-operators/ci-framework'].src_dir  }}/scenarios/centos-9/multinode-ci.yml"
+        - "@{{ ansible_user_dir }}/{{ zuul.projects['github.com/openstack-k8s-operators/telemetry-operator'].src_dir }}/ci/vars-autoscaling.yml"
+        - "@{{ ansible_user_dir }}/{{ zuul.projects['github.com/openstack-k8s-operators/telemetry-operator'].src_dir }}/ci/vars-autoscaling-tempest.yml"
+
+- job:
+    name: telemetry-operator-multinode-default-telemetry
+    parent: podified-multinode-edpm-deployment-crc
+    dependencies: ["openstack-k8s-operators-content-provider"]
+    description: |
+      Deploy a default OpenStack with telemetry enabled, but without COO installed. Check that the telemetry-operator logs don't have any errors.
+    vars:
+      cifmw_extras:
+        - "@{{ ansible_user_dir }}/{{ zuul.projects['github.com/openstack-k8s-operators/ci-framework'].src_dir  }}/scenarios/centos-9/multinode-ci.yml"
+        - "@{{ ansible_user_dir }}/{{ zuul.projects['github.com/openstack-k8s-operators/telemetry-operator'].src_dir }}/ci/vars-default-telemetry.yml"
+
+- job:
+    name: telemetry-operator-multinode-logging
+    parent: podified-multinode-edpm-deployment-crc
+    dependencies: ["openstack-k8s-operators-content-provider"]
+    description: |
+      Deploy OpenStack with Logging features enabled
+    vars:
+      cifmw_extras:
+        - "@{{ ansible_user_dir }}/{{ zuul.projects['github.com/openstack-k8s-operators/ci-framework'].src_dir  }}/scenarios/centos-9/multinode-ci.yml"
+        - "@{{ ansible_user_dir }}/{{ zuul.projects['github.com/openstack-k8s-operators/telemetry-operator'].src_dir }}/ci/vars-logging.yml"
+
+- project-template:
+    name: rdo-telemetry-tempest-plugin-jobs
+    openstack-experimental:
+      jobs:
+        - telemetry-operator-multinode-autoscaling-tempest:
+            dependencies: []
+            # Required because RDO and openstack repos use master as their default branch and also try to check out master for all the projects included in a job.
+            required-projects:
+              - name: openstack-k8s-operators/ci-framework
+                override-checkout: main
+              - name: openstack-k8s-operators/install_yamls
+                override-checkout: main
+              - name: openstack-k8s-operators/infra-operator
+                override-checkout: main
+              - name: openstack-k8s-operators/openstack-baremetal-operator
+                override-checkout: main
+              - name: openstack-k8s-operators/openstack-must-gather
+                override-checkout: main
+              - name: openstack-k8s-operators/openstack-operator
+                override-checkout: main
+              - name: openstack-k8s-operators/repo-setup
+                override-checkout: main
+              - name: openstack-k8s-operators/edpm-ansible
+                override-checkout: main
+            pre-run:
+              - ci/debug-get-branch-for-telemetry-tempest-plugin.yml
+
+- project:
+    name: openstack-k8s-operators/telemetry-operator
+    templates:
+      - podified-multinode-edpm-pipeline
+    github-check:
+      jobs:
+        - telemetry-operator-multinode-autoscaling-tempest
+        - telemetry-operator-multinode-default-telemetry
+        - functional-tests-on-osp18: &fvt_jobs_config
+            voting: false
+            required-projects:
+              - name: infrawatch/feature-verification-tests
+                override-checkout: master
+        - functional-logging-tests-osp18: *fvt_jobs_config
+        - functional-graphing-tests-osp18: *fvt_jobs_config
+        - functional-metric-verification-tests-osp18: *fvt_jobs_config
